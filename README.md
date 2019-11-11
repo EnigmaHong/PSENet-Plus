@@ -5,7 +5,7 @@ PSENet Pytorch版本的优化与增强
 
 ### 新版本特性：
 
-- [x] 原作者pretrained-ic15模型在一般场景下表现不佳，本文在超过20K的数据样本上训练得到新模型。模型地址：https://pan.baidu.com/s/13VX--LLh2_AEzNjOgaB_Lw。请勿商用。
+- [x] 原作者pretrained-ic15模型在一般场景下表现不佳，本文在超过20K的数据样本上训练得到新模型。模型地址：https://pan.baidu.com/s/13VX--LLh2_AEzNjOgaB_Lw 请勿商用。
 
 - [x] 在训练代码中增添Tensorboard可视化。
 
