@@ -39,8 +39,8 @@ $ python pse_enjoy.py --imgfile XXX.png --modelpath YYY/checkpoint.pth.tar
 - 如果编译后找不到.so文件，不要忘记修改环境变量，使支持c++opencv
 
 ```bash
-$ export PKG_CONFIG_PATH=/usr/local/lib64/pkgconfig:$PKG_CONFIG_PATH #编译时用，opencv路径
-$ export LD_LIBRARY_PATH=/usr/local/lib64/:$LD_LIBRARY_PATH #运行时用，opencv路径
+$ export PKG_CONFIG_PATH=/mnt/lrzhang/opencv-3.4.6/build/install/lib64/pkgconfig:$PKG_CONFIG_PATH
+$ export LD_LIBRARY_PATH=/mnt/lrzhang/opencv-3.4.6/build/install/lib64/:$LD_LIBRARY_PATH
 ```
 
 ### 在ICPR2018淘宝测试集上:
