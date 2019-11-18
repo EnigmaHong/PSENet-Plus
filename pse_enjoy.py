@@ -75,7 +75,7 @@ def use_psenet(img,model,precession=960,kernel_num=7,min_kernel_area=5.0,min_are
 	        kernels = kernels.data.cpu().numpy()[0].astype(np.uint8)
 		
         else:
-		img = Variable(scaled_img)
+		    img = Variable(scaled_img)
 	        outputs = model(img)
 	        score = torch.sigmoid(outputs[:, 0, :, :])
 	        outputs = (torch.sign(outputs - 1) + 1) / 2

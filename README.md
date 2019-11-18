@@ -1,5 +1,5 @@
 # PSENet-Plus
-PSENet Pytorch版本的优化与增强（python2.7 + Pytorch1.3)
+PSENet Pytorch版本的优化与增强（python2.7or3.6 + Pytorch1.3)
 
 ### 原作者版本：<https://github.com/whai362/PSENet>
 
@@ -13,11 +13,22 @@ PSENet Pytorch版本的优化与增强（python2.7 + Pytorch1.3)
 
 - [x] 增添了单张图片测试pse_enjoy.py并封装，易于移植到综合项目。
 
-- [x] pse_enjoy.py支持CPU模式，但注意训练和批测试仍需在CUDA环境中进行
+- [x] pse_enjoy.py支持CPU模式，但注意训练和批测试仍需在CUDA环境中进行。
 
-- [ ] 优化pse中c++内容，提高推理速度。
+- [ ] 优化pse中c++内容，提高推理速度。(not released at present for IP reason)
 
-- [ ] 迁移到python3.X环境
+- [x] 迁移到python3.6环境。（python2.7版本和python3.6版本切换，解决方案如下）
+
+  > 修改pse/include/pybind11/detail/common.h中的第112~114：
+  > #include <python3.6m/Python.h>
+  > #include <python3.6m/frameobject.h>
+  > #include <python3.6m/pythread.h>
+  > 为：
+  > #include <python2.7/Python.h>
+  > #include <python2.7/frameobject.h>
+  > #include <python2.7/pythread.h>
+  >
+  > 主要是pybind的写法原因，通常可在usr/include目录下找需要的python版本头文件
 
 ### 新版本说明：
 
