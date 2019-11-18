@@ -20,12 +20,19 @@ PSENet Pytorch版本的优化与增强（python2.7or3.6 + Pytorch1.3)
 - [x] 迁移到python3.6环境。（python2.7版本和python3.6版本切换，解决方案如下）
 
   > 修改pse/include/pybind11/detail/common.h中的第112~114：
+  >
   > #include <python3.6m/Python.h>
+  >
   > #include <python3.6m/frameobject.h>
+  >
   > #include <python3.6m/pythread.h>
+  >
   > 为：
+  >
   > #include <python2.7/Python.h>
+  >
   > #include <python2.7/frameobject.h>
+  >
   > #include <python2.7/pythread.h>
   >
   > 主要是pybind的写法原因，通常可在usr/include目录下找需要的python版本头文件
