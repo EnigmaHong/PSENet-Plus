@@ -20,17 +20,17 @@ from pse import pse
 # python pse
 #from pypse import pse as pypse
 
-def load_psenet(filepath=None):
+def load_psenet(filepath=None,cuda=torch.cuda.is_available()):
     model = models.resnet50(pretrained=True, num_classes=7, scale=1)
     for param in model.parameters():
         param.requires_grad = False
 
-    model = model.cuda()
+    model = model.cuda() if cuda else model
     
     if filepath is not None:                                         
         if os.path.isfile(filepath):
             print("Loading model and optimizer from checkpoint '{}'".format(filepath))
-            checkpoint = torch.load(filepath)
+            checkpoint = torch.load(filepath) if cuda else torch.load(filepath,map_location=lambda storage, loc: storage)
             
             # model.load_state_dict(checkpoint['state_dict'])
             d = collections.OrderedDict()
@@ -49,7 +49,7 @@ def load_psenet(filepath=None):
         sys.stdout.flush()
     return model.eval()
 
-def use_psenet(img,model,precession=960,kernel_num=7,min_kernel_area=5.0,min_area=800,min_score=0.93):
+def use_psenet(img,model,precession=960,kernel_num=7,min_kernel_area=5.0,min_area=800,min_score=0.93,cuda=torch.cuda.is_available()):
     org_img = img[:, :, [2, 1, 0]]
     h, w = org_img.shape[0:2]
     scale = precession * 1.0 / max(h, w)
@@ -62,19 +62,30 @@ def use_psenet(img,model,precession=960,kernel_num=7,min_kernel_area=5.0,min_are
     text_box = org_img.copy()
 
     with torch.no_grad():
-        img = Variable(scaled_img.cuda())
-        torch.cuda.synchronize()
-        outputs = model(img)
-        score = torch.sigmoid(outputs[:, 0, :, :])
-        outputs = (torch.sign(outputs - 1) + 1) / 2
+    	if cuda:
+	        img = Variable(scaled_img.cuda())
+	        torch.cuda.synchronize()
+	        outputs = model(img)
+	        score = torch.sigmoid(outputs[:, 0, :, :])
+	        outputs = (torch.sign(outputs - 1) + 1) / 2
+	        text = outputs[:, 0, :, :]
+	        kernels = outputs[:, 0:kernel_num, :, :] * text
+	        score = score.data.cpu().numpy()[0].astype(np.float32)
+	        text = text.data.cpu().numpy()[0].astype(np.uint8)
+	        kernels = kernels.data.cpu().numpy()[0].astype(np.uint8)
+		
+        else:
+		img = Variable(scaled_img)
+	        outputs = model(img)
+	        score = torch.sigmoid(outputs[:, 0, :, :])
+	        outputs = (torch.sign(outputs - 1) + 1) / 2
+	        text = outputs[:, 0, :, :]
+	        kernels = outputs[:, 0:kernel_num, :, :] * text
+	        score = score.data.numpy()[0].astype(np.float32)
+	        text = text.data.numpy()[0].astype(np.uint8)
+	        kernels = kernels.data.numpy()[0].astype(np.uint8)
 
-        text = outputs[:, 0, :, :]
-        kernels = outputs[:, 0:kernel_num, :, :] * text
 
-    
-    score = score.data.cpu().numpy()[0].astype(np.float32)
-    text = text.data.cpu().numpy()[0].astype(np.uint8)
-    kernels = kernels.data.cpu().numpy()[0].astype(np.uint8)
 
     # c++ version pse
     pred = pse(kernels, min_kernel_area)
@@ -101,7 +112,8 @@ def use_psenet(img,model,precession=960,kernel_num=7,min_kernel_area=5.0,min_are
         bbox = bbox.astype('int32')
         bboxes.append(bbox.reshape(-1))
 
-    torch.cuda.synchronize()
+    if cuda:
+    	torch.cuda.synchronize()
     return bboxes
 
 if __name__ == '__main__':
@@ -110,13 +122,13 @@ if __name__ == '__main__':
                         help='Image file for PSENet detection')
     parser.add_argument('--modelpath', nargs='?', type=str, default="./checkpoints_1108_best/XH_resnet50_bs_8_ep_50/checkpoint.pth.tar",    
                         help='Path to restore trained model')
-    parser.add_argument('--kernel_num', nargs='?', type=int, default=7,
+    parser.add_argument('--kernel_num', nargs='?', type=int, default=3,
                         help='Number of kernels')
     parser.add_argument('--precession', nargs='?', type=int, default=960,
                         help='Long size of intermediate image')
     parser.add_argument('--min_kernel_area', nargs='?', type=float, default=5.0,
                         help='min kernel area')
-    parser.add_argument('--min_area', nargs='?', type=float, default=800.0,
+    parser.add_argument('--min_area', nargs='?', type=float, default=80.0,
                         help='min area')
     parser.add_argument('--min_score', nargs='?', type=float, default=0.93,
                         help='min score')

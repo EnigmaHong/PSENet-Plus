@@ -1,5 +1,5 @@
 # PSENet-Plus
-PSENet Pytorch版本的优化与增强
+PSENet Pytorch版本的优化与增强（python2.7 + Pytorch1.3)
 
 ### 原作者版本：<https://github.com/whai362/PSENet>
 
@@ -13,7 +13,11 @@ PSENet Pytorch版本的优化与增强
 
 - [x] 增添了单张图片测试pse_enjoy.py并封装，易于移植到综合项目。
 
+- [x] pse_enjoy.py支持CPU模式，但注意训练和批测试仍需在CUDA环境中进行
+
 - [ ] 优化pse中c++内容，提高推理速度。
+
+- [ ] 迁移到python3.X环境
 
 ### 新版本说明：
 
